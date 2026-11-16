@@ -3,7 +3,6 @@ import time
 import pandas as pd
 import streamlit as st
 import torch
-from transformers import pipeline
 
 # ======================= Configuración =======================
 MODELO_TEXTO = "Qwen/Qwen2.5-0.5B-Instruct"  # modelo pequeño (~1 GB en bfloat16), cabe en la nube gratuita
@@ -27,6 +26,18 @@ if not HAY_GPU:
 # @st.cache_resource hace que el modelo se cargue UNA sola vez y se comparta entre visitantes.
 @st.cache_resource(show_spinner="Cargando el modelo (solo la primera vez, puede tardar un par de minutos)...")
 def cargar_modelo_texto():
+    # transformers se importa AQUÍ (y no al inicio del archivo) para que la importación ocurra una sola vez,
+    # dentro de la función cacheada. Importarlo al inicio puede fallar de forma intermitente cuando
+    # varias ejecuciones del script arrancan a la vez; por eso también se reintenta.
+    for intento in range(3):
+        try:
+            from transformers import pipeline
+            break
+        except ImportError:
+            if intento == 2:
+                raise
+            time.sleep(2)
+
     return pipeline(
         "text-generation",
         model=MODELO_TEXTO,
