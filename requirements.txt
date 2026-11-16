@@ -1,0 +1,5 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+streamlit>=1.40
+pandas
+torch
+transformers>=4.56
