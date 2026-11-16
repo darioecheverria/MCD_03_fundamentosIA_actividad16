@@ -1,0 +1,4 @@
+[server]
+# El vigilante de archivos de Streamlit inspecciona los módulos cargados y puede disparar
+# importaciones perezosas de transformers/torch en paralelo. En un despliegue no hace falta.
+fileWatcherType = "none"
